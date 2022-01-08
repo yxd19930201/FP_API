@@ -450,6 +450,180 @@ class Test_Product():
         assert get_ChargePool_id
 
 
+    # 获取商户开票信息
+
+    def test_GetFpInvoice_Info(self,fp_token):
+        GetFpInvoice_Info_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Invoice/GetFpInvoiceInfo'
+        GetFpInvoice_Info_data={'FpMemberId':'64cf60f0-d5d3-449b-95a2-03db1c640ace'}
+        GetFpInvoice_Info_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        GetFpInvoice_Info=requests.get(GetFpInvoice_Info_url,params=GetFpInvoice_Info_data,headers=GetFpInvoice_Info_head)
+        print(GetFpInvoice_Info.text)
+        GetFpInvoice_Info_fpBankAccount=GetFpInvoice_Info.json()['data']['fpBankAccount']
+        assert GetFpInvoice_Info_fpBankAccount
+
+
+    # 进货商申请开票
+    def test_Apply_Invoice(self,fp_token):
+        Apply_Invoice_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Invoice/DealerMemberApplyInvoice'
+        Apply_Invoice_data={
+                              "invoiceApplyNo": "9704596-100111",
+                              "dealerMemberId": "ca64db0c-173a-4264-b017-5ce12bf6f951",
+                              "fpMemberId": "2a1b1b4a-985e-49d7-bc33-a688d6ab9c8c",
+                              "dealerAffiliatedCompanyName": "上海亚屹电子有限公司",
+                              "dealerTaxRegistrationNumber": "",
+                              "dealerRegisteredPhone": "",
+                              "dealerRegisteredAddress": "",
+                              "dealerBankName": "",
+                              "dealerBankAccount": "",
+                              "dealerReceivesAddress": "",
+                              "dealerReceiver": "",
+                              "dealerReceivesPhone": "",
+                              "dealerReceiverEmail": "",
+                              "fpAffiliatedCompanyName": "",
+                              "fpTaxRegistrationNumber": "",
+                              "fpRegisteredPhone": "",
+                              "fpRegisteredAddress": "",
+                              "invoiceAmount": 0,
+                              "applyInvoiceDetailList": [
+                                {
+                                  "invoiceContentType": "",
+                                  "remark": "",
+                                  "invoiceAmount": 0.9600,
+                                  "taxes": 0,
+                                  "invoiceType": 0
+                                }
+                              ],
+                              "creatorName": "b1a04829-ef4e-437b-b70a-7696371dbd95"
+                            }
+
+        Apply_Invoice_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Invoice=requests.post(Apply_Invoice_url,data=json.dumps(Apply_Invoice_data),headers=Apply_Invoice_head)
+        print(get_Apply_Invoice.text)
+        code=get_Apply_Invoice.status_code
+        assert code==200
+
+
+
+    # 非企业福利应用审核通过后，生成密价记录
+    def test_Member_Secret(self,fp_token):
+        Member_Secret_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Member/AddToTemplateMemberSecret'
+        Member_Secret_data={"memberId": "10e0b440-b34e-4d82-8c35-2555e7baf205", "clientId": "10000079", "fpMemberId": "64cf60f0-d5d3-449b-95a2-03db1c640ace"}
+        Member_Secret_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Member_Secret=requests.post(Member_Secret_url,data=json.dumps(Member_Secret_data),headers=Member_Secret_head)
+        print(get_Member_Secret.text)
+        code=get_Member_Secret.status_code
+        assert code==200
+
+
+
+    # 企业福利应用审核通过后，生成密价记录
+    def test_Apply_Qyfl(self,fp_token):
+        Apply_Qyfl_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Member/AddToTemplateMemberSecretAfterApplyQyfl'
+        Apply_Qyfl_data={"memberId": "10e0b440-b34e-4d82-8c35-2555e7baf205", "fpMemberId": "64cf60f0-d5d3-449b-95a2-03db1c640ace"}
+        Apply_Qyfl_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Qyfl=requests.post(Apply_Qyfl_url,data=json.dumps(Apply_Qyfl_data),headers=Apply_Qyfl_head)
+        print(get_Apply_Qyfl.text)
+        code=get_Apply_Qyfl.status_code
+        assert code==200
+
+
+
+    # 通过商品Id获取已密价的商户id列表
+    def test_GetAll_Member(self,fp_token):
+        GetAll_Member_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Member/GetAllMemberByProductId'
+        GetAll_Member_data={
+                              "productIdList": [
+                                "15894934"
+                              ]
+                            }
+        GetAll_Member_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_GetAll_Member=requests.post(GetAll_Member_url,data=json.dumps(GetAll_Member_data),headers=GetAll_Member_head)
+        print(get_GetAll_Member.text)
+        get_GetAll_id=get_GetAll_Member.json()['data'][0]['id']
+        assert get_GetAll_id
+
+
+
+
+    # 申请冻结
+    def test_Apply_Freeze(self,fp_token):
+        Apply_Freeze_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/ApplyFreeze'
+        Apply_Freeze_data={"orderId": "21080544434873201130", "bizId": "722dd68b-ad6a-4fad-80e9-ebf80c655ec5", "amount": "40.0000"}
+        Apply_Freeze_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Freeze=requests.post(Apply_Freeze_url,data=json.dumps(Apply_Freeze_data),headers=Apply_Freeze_head)
+        print(get_Apply_Freeze.text)
+        applyRecordId=get_Apply_Freeze.json()['data']['applyRecordId']
+        print(applyRecordId)
+        assert applyRecordId
+
+
+
+    # 申请赔付
+    def test_Apply_Compensate(self,fp_token):
+        Apply_Compensate_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/ApplyCompensate'
+        Apply_Compensate_data={"orderId": "21060825253646771135", "applyRecordId": "06457e325236413aa9f8e0e4d006d83b"}
+        Apply_Compensate_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Compensate=requests.post(Apply_Compensate_url,data=json.dumps(Apply_Compensate_data),headers=Apply_Compensate_head)
+        code=get_Apply_Compensate.status_code
+        assert code==200
+
+
+
+    # 申请解冻
+    def test_Apply_UnFreeze(self,fp_token):
+        Apply_UnFreeze_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/ApplyUnFreeze'
+        Apply_UnFreeze_data={"orderId": "21060825253646771135", "applyRecordId": "06457e325236413aa9f8e0e4d006d83b"}
+        Apply_UnFreeze_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_UnFreeze=requests.post(Apply_UnFreeze_url,data=json.dumps(Apply_UnFreeze_data),headers=Apply_UnFreeze_head)
+        get_Apply_code=get_Apply_UnFreeze.status_code
+        assert get_Apply_code==200
+
+
+    # 申请回款
+    def test_Apply_Return(self,fp_token):
+        Apply_Return_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/ApplyReturn'
+        Apply_Return_data={"orderId": "21060825253646771135", "applyRecordId": "06457e325236413aa9f8e0e4d006d83b"}
+        Apply_Return_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Return=requests.post(Apply_Return_url,data=json.dumps(Apply_Return_data),headers=Apply_Return_head)
+        get_Apply_code=get_Apply_Return.status_code
+        assert get_Apply_code==200
+
+
+
+
+    # 查询可退额度和赔付额度
+    def test_GetCompensate_Info(self,fp_token):
+        GetCompensate_Info_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/GetCompensateInfo'
+        GetCompensate_Info_data={'OrderId':'21080544434873201130'}
+        GetCompensate_Info_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        GetCompensate=requests.get(GetCompensate_Info_url,params=GetCompensate_Info_data,headers=GetCompensate_Info_head)
+        print(GetCompensate.text)
+        get_GetCompensate=GetCompensate.json()['data']['compensateAmount']
+        assert get_GetCompensate
+
+
+    # 赔付计损
+    def test_Apply_Loss(self,fp_token):
+        Apply_Loss_url='http://pre-fp-supportinterface-api-admin.suuyuu.cn/api/Compensate/ApplyLoss'
+        Apply_Loss_data={"applyRecordId": "06457e325236413aa9f8e0e4d006d83b", "orderId": "21060825253646771135"}
+        Apply_Loss_head={'authorization': 'Bearer {}'.format(fp_token),
+                                  'Content-Type': 'application/json; charset=utf-8'}
+        get_Apply_Loss=requests.post(Apply_Loss_url,data=json.dumps(Apply_Loss_data),headers=Apply_Loss_head)
+        print(get_Apply_Loss.text)
+        code=get_Apply_Loss.status_code
+        assert code==200
+
+
 
 
 
